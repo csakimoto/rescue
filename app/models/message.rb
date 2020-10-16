@@ -3,12 +3,6 @@ class Message < ApplicationRecord
     #get unsent messages
     messages = Message.get_unsent()
     if messages.present?
-      #get current providers
-      providers = Provider.where("active=true").all
-
-      #Post message data to provider
-      number_of_providers =providers.length
-
       #used to keep track of number of attempt we try to send message
       attempt = 0
 
@@ -18,6 +12,12 @@ class Message < ApplicationRecord
 
       messages.each do |message|
         begin
+          #get current providers
+          providers = Provider.where("active=true").all
+
+          #Post message data to provider
+          number_of_providers =providers.length
+
           #post text message to provider
           while (attempt<4)  do
 
@@ -52,7 +52,7 @@ class Message < ApplicationRecord
               break;
             else
               #all other http response codes are captured here
-              message.update(:sent_message_id=>parsed_response_body['message_id'],:queued=>false,:code =>response.status)
+              message.update(:sent_message_id=>parsed_response_body['message_id'],:queued=>false,:code =>response.status,:status=>'Failed')
               break;
             end
               attempt=attempt.next
