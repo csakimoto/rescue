@@ -5,5 +5,5 @@
   - default
 :schedule:
   first:
-    every: '5s'
+    every: '2s'
     class: 'SchedulerWorker'
