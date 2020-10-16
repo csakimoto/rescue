@@ -1,21 +1,21 @@
 class Message < ApplicationRecord
-
   def self.send_message()
     #get unsent messages
     messages = Message.get_unsent()
-    #get current providers
-    providers = Provider.where("active=true").all
-
-    #Post message data to provider
-    number_of_providers =providers.length
-
-    #used to keep track of number of attempt we try to send message
-    attempt = 0
-
-    # Cycle through messages and post to the provider
-    # Try to send three times if the post fails
-    # If the send fails more than three times the message is considered invalid
     if messages.present?
+      #get current providers
+      providers = Provider.where("active=true").all
+
+      #Post message data to provider
+      number_of_providers =providers.length
+
+      #used to keep track of number of attempt we try to send message
+      attempt = 0
+
+      # Cycle through messages and post to the provider
+      # Try to send three times if the post fails
+      # If the send fails more than three times the message is considered invalid
+
       messages.each do |message|
         begin
           #post text message to provider
@@ -53,6 +53,7 @@ class Message < ApplicationRecord
             else
               #all other http response codes are captured here
               message.update(:sent_message_id=>parsed_response_body['message_id'],:queued=>false,:code =>response.status)
+              break;
             end
               attempt=attempt.next
           end
