@@ -1,5 +1,5 @@
 class Message < ApplicationRecord
-  def self.send_message()
+  def self.send_messages()
     #get unsent messages
     messages = Message.get_unsent()
     if messages.present?
@@ -27,7 +27,7 @@ class Message < ApplicationRecord
             #post message to provider
             response = Faraday.post(providers[provider_place_holder].send_url, message.to_json, "Content-Type" => "application/json")
 
-            #parse JSON reponse to pick up message_id
+            #parse JSON response to pick up message_id
             parsed_response_body=ActiveSupport::JSON.decode(response.body)
 
             case response.status
@@ -52,7 +52,8 @@ class Message < ApplicationRecord
               break;
             else
               #all other http response codes are captured here
-              message.update(:sent_message_id=>parsed_response_body['message_id'],:queued=>false,:code =>response.status,:status=>'Failed')
+              message.update(:sent_message_id=>parsed_response_body['message_id'],:queued=>false,:code =>response.status,:status=>'failed')
+              #break from case statement
               break;
             end
               attempt=attempt.next
@@ -61,12 +62,13 @@ class Message < ApplicationRecord
           #if after 5 attempts and no provider is available set message as failed
           if response.status==500
             #remove from queue and set as failed.
-            message.update(:queued=>false,:status=>'Failed')
+            Provider.update_failed_count(providers,providers[provider_place_holder])
+            message.update(:queued=>false,:status=>'failed')
           end
           #reset attempt
           attempt=0
         rescue StandardError => e
-          message.update(:queued=>false,:status=>'Invalid')
+          message.update(:queued=>false,:status=>'invalid')
           next
         end
       end

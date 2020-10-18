@@ -4,7 +4,7 @@ class MessageController < ApplicationController
   #this will build a batch of messages to be picked up when background job runs
   def create
     if Message.create(message_params)
-      render json: 'OK'
+      render json: {status: :ok}
     else
       render json: 'Error!'
     end
@@ -23,8 +23,8 @@ class MessageController < ApplicationController
 
   #Send messages from outside post call
   def send_messages
-    if Message.send_message()
-      render json: "Ok"
+    if Message.send_messages()
+      render json: {status: :ok}
     else
       render json: "Error"
     end

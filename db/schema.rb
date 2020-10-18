@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(version: 2020_10_14_133838) do
     t.decimal "percentage_failed"
     t.integer "count", default: 0
     t.integer "failed_count", default: 0
+    t.integer "attempts", default: 0
     t.integer "total_messages_sent"
     t.boolean "active"
     t.datetime "created_at", precision: 6, null: false

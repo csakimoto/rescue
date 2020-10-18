@@ -13,6 +13,8 @@ class CreateProviders < ActiveRecord::Migration[6.0]
       t.column :count,:integer, :default=>0
       #number of messages where provider returned 500 status
       t.column :failed_count,:integer, :default=>0
+      #attempt message was sent
+      t.column :attempts,:integer,:default=>0
       #total messages sent with 200 status
       t.column :total_messages_sent,:integer
       #is the provider still valid

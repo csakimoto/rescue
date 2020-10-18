@@ -4,6 +4,6 @@ class SchedulerWorker
 
   def perform(*args)
     #send queued messages
-    Message.send_message()
+    Message.send_messages()
   end
 end

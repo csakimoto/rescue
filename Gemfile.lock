@@ -1,3 +1,50 @@
+GIT
+  remote: https://github.com/rspec/rspec-core.git
+  revision: fe3084758857f0714f05ada44a18f1dfe9bf7a7e
+  branch: main
+  specs:
+    rspec-core (3.10.0.pre)
+      rspec-support (= 3.10.0.pre)
+
+GIT
+  remote: https://github.com/rspec/rspec-expectations.git
+  revision: 955151da74fd6356e614e62addb3da26ea1ccaf6
+  branch: main
+  specs:
+    rspec-expectations (3.10.0.pre)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (= 3.10.0.pre)
+
+GIT
+  remote: https://github.com/rspec/rspec-mocks.git
+  revision: c1a86de005c5aa7885dbc92487422b0c0f43d324
+  branch: main
+  specs:
+    rspec-mocks (3.10.0.pre)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (= 3.10.0.pre)
+
+GIT
+  remote: https://github.com/rspec/rspec-rails.git
+  revision: 508ee0b74c2b63c9951f74a7f25997ee4aa23d75
+  branch: main
+  specs:
+    rspec-rails (4.1.0.pre)
+      actionpack (>= 4.2)
+      activesupport (>= 4.2)
+      railties (>= 4.2)
+      rspec-core (= 3.10.0.pre)
+      rspec-expectations (= 3.10.0.pre)
+      rspec-mocks (= 3.10.0.pre)
+      rspec-support (= 3.10.0.pre)
+
+GIT
+  remote: https://github.com/rspec/rspec-support.git
+  revision: ffe06da9b33c909d2c0d7c08195331aaf9221daa
+  branch: main
+  specs:
+    rspec-support (3.10.0.pre)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -63,10 +110,19 @@ GEM
     concurrent-ruby (1.1.7)
     connection_pool (2.2.3)
     crass (1.0.6)
+    database_cleaner (1.8.5)
+    diff-lcs (1.4.4)
     e2mmap (0.1.0)
     erubi (1.9.0)
     et-orbi (1.2.4)
       tzinfo
+    factory_bot (6.1.0)
+      activesupport (>= 5.0.0)
+    factory_bot_rails (6.1.0)
+      factory_bot (~> 6.1.0)
+      railties (>= 5.0.0)
+    faker (2.14.0)
+      i18n (>= 1.6, < 2)
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
     ffi (1.13.1)
@@ -195,6 +251,9 @@ PLATFORMS
 DEPENDENCIES
   bootsnap (>= 1.4.2)
   byebug
+  database_cleaner
+  factory_bot_rails
+  faker
   faraday
   listen (~> 3.2)
   pg
@@ -202,6 +261,11 @@ DEPENDENCIES
   rack-cors
   rails (~> 6.0.3, >= 6.0.3.4)
   redis-rails
+  rspec-core!
+  rspec-expectations!
+  rspec-mocks!
+  rspec-rails!
+  rspec-support!
   sidekiq
   sidekiq-scheduler
   spring

@@ -17,4 +17,5 @@ Rails.application.routes.draw do
 
   #route to look at sidekiq web stats
   mount Sidekiq::Web => '/sidekiq'
+
 end

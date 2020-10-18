@@ -2,7 +2,7 @@ class CallbackController < ApplicationController
   # verify callback of sent message and update related message on status
   def verify
     if Message.update_callback_attr(callback_params['message_id'],callback_params['status'])
-      render json: 'OK'
+      render json: {status: :ok}
     else
       render json: 'Error'
     end
