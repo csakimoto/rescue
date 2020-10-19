@@ -24,7 +24,7 @@ RSpec.describe Provider, :type => :model do
 
       provider1 = Provider.where(:id=>p1.id).first
       provider2 = Provider.where(:id=>p2.id).first
-      (expect(provider1.actual_percentage_used).to eq(0.7)) && (expect(provider2.actual_percentage_used).to eq(0.3))
+      (expect(provider1.actual_percentage_used.round(2)).to eq(0.73e0)) && (expect(provider2.actual_percentage_used.round(2)).to eq(0.27e0))
     end
 
     it "test self.update_count(providers,current_provider): Check provider count is incremented" do
@@ -61,7 +61,7 @@ RSpec.describe Provider, :type => :model do
       provider1 = Provider.where(:id=>p1.id).first
       provider2 = Provider.where(:id=>p2.id).first
 
-      (expect(provider1.percentage_failed).to eq(0.0)) && (expect(provider2.percentage_failed).to eq(0.666666666666667e-1))
+      (expect(provider1.percentage_failed.round(2)).to eq(0.0)) && (expect(provider2.percentage_failed.round(3)).to eq(0.67e-1))
     end
 
 end

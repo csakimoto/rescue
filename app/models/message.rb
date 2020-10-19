@@ -2,14 +2,10 @@ class Message < ApplicationRecord
   def self.send_messages()
     #get unsent messages
     messages = Message.get_unsent()
+
     if messages.present?
       #used to keep track of number of attempt we try to send message
       attempt = 0
-
-      # Cycle through messages and post to the provider
-      # Try to send three times if the post fails
-      # If the send fails more than three times the message is considered invalid
-
       messages.each do |message|
         begin
           #get current providers
@@ -17,7 +13,6 @@ class Message < ApplicationRecord
 
           #Post message data to provider
           number_of_providers =providers.length
-
           #post text message to provider
           while (attempt<4)  do
 
@@ -33,37 +28,23 @@ class Message < ApplicationRecord
             case response.status
               #if repsonse status is 500 then try other provider
             when 500
-              #record 500 status failure related to the provider
-              Provider.update_failed_count(providers,providers[provider_place_holder])
-              #if reached maximum number of providers then go to other provider
-              if provider_place_holder.next==number_of_providers
-                provider_place_holder=0
-              else
-                provider_place_holder=provider_place_holder.next
-              end
+              #get new provider due to failure, update provider failed count, and try to send again
+              provider_place_holder=self.handle_500_status(providers,provider_place_holder)
             when 200
-              #if message sent to provider successful record time sent,message id, take out of queue, set response status from provider, and which provider sent message.
-              message.update(:sent_message_id=>parsed_response_body['message_id'],:queued=>false,:code =>response.status,:provider_id=>providers[provider_place_holder].id,:sent_time=>Time.now)
-
-              #update statistics of providers
-              Provider.update_count(providers,providers[provider_place_holder])
-
-              #break from case statement
+              #if response 200 status update providers the message was sent successfully and calculate new stats on providers
+              self.handle_200_status(parsed_response_body,providers,provider_place_holder)
               break;
             else
-              #all other http response codes are captured here
-              message.update(:sent_message_id=>parsed_response_body['message_id'],:queued=>false,:code =>response.status,:status=>'failed')
+              #all other response codes are handled here as message being invalid.
+              self.unhandled_error_status(parsed_response_body)
               #break from case statement
               break;
             end
-              attempt=attempt.next
+            attempt=attempt.next
           end
-
           #if after 5 attempts and no provider is available set message as failed
           if response.status==500
-            #remove from queue and set as failed.
-            Provider.update_failed_count(providers,providers[provider_place_holder])
-            message.update(:queued=>false,:status=>'failed')
+            self.handle_attempt_end(message)
           end
           #reset attempt
           attempt=0
@@ -75,6 +56,49 @@ class Message < ApplicationRecord
     else
       return false
     end
+  end
+
+
+  def self.handle_500_status(providers,provider_place_holder)
+    begin
+      #record 500 status failure related to the provider
+      Provider.update_failed_count(providers,providers[provider_place_holder])
+      #if reached maximum number of providers then go to other provider
+      if provider_place_holder.next==number_of_providers
+        return 0
+      else
+        return provider_place_holder.next
+      end
+    rescue StandardError => e
+      return e
+    end
+  end
+
+  def self.handle_200_status(parsed_response_body,providers,provider_place_holder)
+    begin
+      #if message sent to provider successful record time sent,message id, take out of queue, set response status from provider, and which provider sent message.
+      message.update(:sent_message_id=>parsed_response_body['message_id'],:queued=>false,:code =>response.status,:provider_id=>providers[provider_place_holder].id,:sent_time=>Time.now)
+
+      #update statistics of providers
+      Provider.update_count(providers,providers[provider_place_holder])
+    rescue StandardError => e
+      return e
+    end
+  end
+
+  def self.unhandled_error_status(parsed_response_body)
+    begin
+      #all other http response codes are captured here
+      message.update(:sent_message_id=>parsed_response_body['message_id'],:queued=>false,:code =>response.status,:status=>'failed')
+    rescue StandardError => e
+      return e
+    end
+  end
+
+  def self.handle_attempt_end(message)
+    #remove from queue and set as failed.
+    Provider.update_failed_count(providers,providers[provider_place_holder])
+    message.update(:queued=>false,:status=>'failed')
   end
 
   #update callback message status based on sent_message_id from provider

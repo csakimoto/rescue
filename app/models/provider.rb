@@ -7,7 +7,6 @@ class Provider < ApplicationRecord
       return 1
     end
   end
-
   #update count of message sent with 200 status from provider
   def self.update_count(providers,current_provider)
     begin
@@ -21,13 +20,14 @@ class Provider < ApplicationRecord
   def self.calculate_percentage_used(providers)
     begin
       providers.each do |p|
-        actual_percentage_used = p.count.next.to_f/p.total_messages_sent.next.to_f
+        actual_percentage_used = (p.count.next.to_f/p.total_messages_sent.next.to_f)
         p.update(:actual_percentage_used=>actual_percentage_used,:total_messages_sent=>p.total_messages_sent.next)
       end
     rescue StandardError => e
       return e.message
     end
   end
+
   #update count of message sent with 500 status from provider
   def self.update_failed_count(providers,current_provider)
     begin
@@ -50,6 +50,5 @@ class Provider < ApplicationRecord
       return e.message
     end
   end
-
 
 end
